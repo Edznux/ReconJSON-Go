@@ -2,6 +2,7 @@ package tests
 
 import (
 	"bufio"
+	"errors"
 	"net"
 	"os"
 	"testing"
@@ -9,6 +10,13 @@ import (
 	rjson "github.com/edznux/ReconJSON-Go"
 )
 
+func RemoveFile(filename string) error {
+	err := os.Remove(filename)
+	if err != nil {
+		return errors.New("Could not delete file : " + err.Error())
+	}
+	return nil
+}
 func TestMustOneByLine(t *testing.T) {
 	fileName := "testLine.json"
 
@@ -35,7 +43,12 @@ func TestMustOneByLine(t *testing.T) {
 	}
 
 	count := 0
-	file, _ := os.Open(fileName)
+	file, err := os.Open(fileName)
+	if err != nil {
+		t.Errorf("Failed to open file %s : %s", fileName, err.Error())
+	}
+	defer file.Close()
+
 	scanner := bufio.NewScanner(file)
 
 	for scanner.Scan() {
@@ -45,6 +58,8 @@ func TestMustOneByLine(t *testing.T) {
 	if count != 5 {
 		t.Errorf("The written file is not correctly wrote. Expected %d lines, got %d", 5, count)
 	}
+
+	RemoveFile(fileName)
 }
 
 func TestMustJsonName(t *testing.T) {
@@ -54,6 +69,7 @@ func TestMustJsonName(t *testing.T) {
 	err := rjson.Write(hosts, wrongFileName)
 	if err == nil {
 		t.Errorf("Shouldn't be able to write file without .json extention, got %s", wrongFileName)
+		RemoveFile(wrongFileName)
 	}
 }
 
@@ -70,11 +86,13 @@ func TestHost(t *testing.T) {
 	basicHost.Company = "Acme"
 
 	hosts = append(hosts, *basicHost)
-	err := rjson.Write(hosts, fileName)
 
+	err := rjson.Write(hosts, fileName)
 	if err != nil {
 		t.Errorf("Failed to write the ReconJSON file: %s", err.Error())
 	}
+
+	RemoveFile(fileName)
 }
 
 func TestHostPort(t *testing.T) {
@@ -82,7 +100,7 @@ func TestHostPort(t *testing.T) {
 	fileName := "testPort.json"
 	ip, _, _ := net.ParseCIDR("192.168.0.1")
 	port := rjson.NewPort()
-	port.State = rjson.Open.String()
+	port.State = rjson.StateOpen.String()
 	port.Port = 22
 	port.Protocol = "ssh"
 	port.Banner = "SSH-2.0-OpenSSH_7.2p2 Ubuntu-4ubuntu2.4"
@@ -105,6 +123,7 @@ func TestHostPort(t *testing.T) {
 	if err != nil {
 		t.Errorf("Failed to write the ReconJSON file: %s", err.Error())
 	}
+	RemoveFile(fileName)
 }
 
 func TestHostDNS(t *testing.T) {
@@ -128,6 +147,7 @@ func TestHostDNS(t *testing.T) {
 	if err != nil {
 		t.Errorf("Failed to write the ReconJSON file: %s", err.Error())
 	}
+	RemoveFile(fileName)
 }
 
 func TestHostService(t *testing.T) {
@@ -150,7 +170,7 @@ func TestHostService(t *testing.T) {
 	}
 
 	port := rjson.NewPort()
-	port.State = rjson.Open.String()
+	port.State = rjson.StateOpen.String()
 	port.Port = 80
 	port.Protocol = "http"
 	port.Service = *service
@@ -172,4 +192,7 @@ func TestHostService(t *testing.T) {
 	if err != nil {
 		t.Errorf("Failed to write the ReconJSON file: %s", err.Error())
 	}
+
+	RemoveFile(fileName)
+
 }
