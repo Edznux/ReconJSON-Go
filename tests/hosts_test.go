@@ -14,6 +14,7 @@ func TestMustOneByLine(t *testing.T) {
 
 	var hosts []rjson.Host
 	ip, _, _ := net.ParseCIDR("192.168.0.1")
+
 	basicHost := rjson.Host{
 		Type:    "Host",
 		Fqdn:    "example.acme.com",
@@ -21,6 +22,7 @@ func TestMustOneByLine(t *testing.T) {
 		Domain:  "acme.com",
 		Company: "Acme",
 	}
+
 	// should add 3 line
 	hosts = append(hosts, basicHost)
 	hosts = append(hosts, basicHost)
@@ -35,6 +37,7 @@ func TestMustOneByLine(t *testing.T) {
 	count := 0
 	file, _ := os.Open(fileName)
 	scanner := bufio.NewScanner(file)
+
 	for scanner.Scan() {
 		count++
 	}
@@ -56,19 +59,115 @@ func TestMustJsonName(t *testing.T) {
 
 func TestHost(t *testing.T) {
 	var hosts []rjson.Host
-	fileName := "tests.json"
+	fileName := "testHost.json"
 	ip, _, _ := net.ParseCIDR("192.168.0.1")
 
-	basicHost := rjson.Host{
-		Type:    "Host",
-		Fqdn:    "example.acme.com",
-		IP:      ip,
-		Domain:  "acme.com",
-		Company: "Acme",
+	basicHost := rjson.NewHost()
+	basicHost.Type = "Host"
+	basicHost.Fqdn = "example.acme.com"
+	basicHost.IP = ip
+	basicHost.Domain = "acme.com"
+	basicHost.Company = "Acme"
+
+	hosts = append(hosts, *basicHost)
+	err := rjson.Write(hosts, fileName)
+
+	if err != nil {
+		t.Errorf("Failed to write the ReconJSON file: %s", err.Error())
+	}
+}
+
+func TestHostPort(t *testing.T) {
+	var hosts []rjson.Host
+	fileName := "testPort.json"
+	ip, _, _ := net.ParseCIDR("192.168.0.1")
+	port := rjson.NewPort()
+	port.State = rjson.Open.String()
+	port.Port = 22
+	port.Protocol = "ssh"
+	port.Banner = "SSH-2.0-OpenSSH_7.2p2 Ubuntu-4ubuntu2.4"
+
+	TCPPorts := []rjson.Port{}
+	TCPPorts = append(TCPPorts, *port)
+
+	basicHost := rjson.NewHost()
+
+	basicHost.Type = "Host"
+	basicHost.Fqdn = "example.acme.com"
+	basicHost.IP = ip
+	basicHost.Domain = "acme.com"
+	basicHost.Company = "Acme"
+	basicHost.Ports.TCP = TCPPorts
+
+	hosts = append(hosts, *basicHost)
+	err := rjson.Write(hosts, fileName)
+
+	if err != nil {
+		t.Errorf("Failed to write the ReconJSON file: %s", err.Error())
+	}
+}
+
+func TestHostDNS(t *testing.T) {
+	var hosts []rjson.Host
+	fileName := "testDNS.json"
+	ip, _, _ := net.ParseCIDR("192.168.0.1")
+
+	dns := rjson.NewDNS()
+
+	basicHost := rjson.NewHost()
+
+	basicHost.Fqdn = "example.acme.com"
+	basicHost.IP = ip
+	basicHost.Domain = "acme.com"
+	basicHost.Company = "Acme"
+	basicHost.DNS = *dns
+
+	hosts = append(hosts, *basicHost)
+	err := rjson.Write(hosts, fileName)
+
+	if err != nil {
+		t.Errorf("Failed to write the ReconJSON file: %s", err.Error())
+	}
+}
+
+func TestHostService(t *testing.T) {
+	var hosts []rjson.Host
+	fileName := "testService.json"
+	ip, _, err := net.ParseCIDR("192.168.0.1/24")
+
+	if err != nil {
+		t.Errorf("Could parse CIDR IP")
 	}
 
-	hosts = append(hosts, basicHost)
-	err := rjson.Write(hosts, fileName)
+	service := rjson.NewService()
+	service.Protocol = "http"
+	service.Content = map[string]string{
+		"path":         "/test",
+		"screenshot":   "/root/screenshots/screenshot.jpg",
+		"code":         "200",
+		"content-type": "text/html",
+		"length":       "1024",
+	}
+
+	port := rjson.NewPort()
+	port.State = rjson.Open.String()
+	port.Port = 80
+	port.Protocol = "http"
+	port.Service = *service
+
+	TCPPorts := []rjson.Port{}
+	TCPPorts = append(TCPPorts, *port)
+
+	basicHost := rjson.NewHost()
+	basicHost.Type = "Host"
+	basicHost.Fqdn = "example.acme.com"
+	basicHost.IP = ip
+	basicHost.Domain = "acme.com"
+	basicHost.Company = "Acme"
+	basicHost.Ports.TCP = TCPPorts
+
+	hosts = append(hosts, *basicHost)
+	err = rjson.Write(hosts, fileName)
 
 	if err != nil {
 		t.Errorf("Failed to write the ReconJSON file: %s", err.Error())

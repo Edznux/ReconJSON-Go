@@ -30,8 +30,8 @@ func (p PortState) String() string {
 	}
 }
 
-type Dns struct {
-	Type  string   `json:"type"` // will be "DNS"
+type DNS struct {
+	Type  string   `json:"type,omitempty"` // will be "DNS"
 	A     []string `json:"A,omitempty"`
 	AAAA  []string `json:"AAAA,omitempty"`
 	CNAME []string `json:"CNAME,omitempty"`
@@ -41,31 +41,47 @@ type Dns struct {
 }
 
 type Service struct {
-	Type     string   `json:"type"` // will be "Service"
-	Protocol string   `json:"protocol"`
-	Content  []string `json:"content"`
+	Type     string            `json:"type,omitempty"` // will be "Service"
+	Protocol string            `json:"protocol"`
+	Content  map[string]string `json:"content,omitempty"`
 }
 
 type Port struct {
-	Type     string    `json:"type"` // will be "Port"
-	Port     uint16    `json:"port"`
-	State    PortState `json:"state"`
-	Protocol string    `json:"protocol,omitempty"`
-	Banner   string    `json:"banner,omitempty"`
-	Service  Service   `json:"service,omitempty"`
+	Type     string  `json:"type,omitempty"` // will be "Port"
+	Port     uint16  `json:"port"`
+	State    string  `json:"state"`
+	Protocol string  `json:"protocol,omitempty"`
+	Banner   string  `json:"banner,omitempty"`
+	Service  Service `json:"service,omitempty"`
 }
 
 type Host struct {
-	Type    string `json:"type"` // will be "Host"
+	Type    string `json:"type,omitempty"` // will be "Host"
 	Fqdn    string `json:"fqdn,omitempty"`
-	IP      net.IP `json:"ip"`
+	IP      net.IP `json:"ip,string"`
 	Domain  string `json:"domain,omitempty"`
 	Company string `json:"company,omitempty"`
-	DNS     []Dns  `json:"dns,omitempty"`
+	DNS     DNS    `json:"dns,omitempty"`
 	Ports   struct {
 		TCP []Port `json:"tcp,omitempty"`
 		UDP []Port `json:"udp,omitempty"`
 	} `json:"ports,omitempty"`
+}
+
+func NewHost() *Host {
+	return &Host{Type: "host"}
+}
+
+func NewDNS() *DNS {
+	return &DNS{Type: "dns"}
+}
+
+func NewService() *Service {
+	return &Service{Type: "service"}
+}
+
+func NewPort() *Port {
+	return &Port{Type: "port"}
 }
 
 /*
