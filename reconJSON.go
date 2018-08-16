@@ -12,17 +12,20 @@ import (
 type PortState uint8
 
 const (
-	Closed = PortState(iota)
-	Open
-	Filtered
+	StateClosed = PortState(iota)
+	StateOpen
+	StateFiltered
 )
 
+/*
+This String function handle the 3 possible state of a port
+*/
 func (p PortState) String() string {
 	name := []string{"closed", "open", "filtered"}
 	i := uint8(p)
 
 	switch {
-	case i <= uint8(Filtered):
+	case i <= uint8(StateFiltered):
 		return name[i]
 	default:
 		// this NEVER should be the case. Panic seems the correct behavior
@@ -68,18 +71,22 @@ type Host struct {
 	} `json:"ports,omitempty"`
 }
 
+// NewHost is the constructor of the Host stucture. It initialize it's type.
 func NewHost() *Host {
 	return &Host{Type: "host"}
 }
 
+// NewDNS is the constructor of the DNS stucture. It initialize it's type.
 func NewDNS() *DNS {
 	return &DNS{Type: "dns"}
 }
 
+// NewService is the constructor of the Service stucture. It initialize it's type.
 func NewService() *Service {
 	return &Service{Type: "service"}
 }
 
+// NewPort is the constructor of the Port stucture. It initialize it's type.
 func NewPort() *Port {
 	return &Port{Type: "port"}
 }
@@ -105,15 +112,28 @@ func Write(hosts []Host, filename string) error {
 		fmt.Println("h :", h)
 		lines = append(lines, string(line))
 	}
+
+	/*
+		Create a JSON array with a starting "["
+		Add all Host objects, comma separated, one by lines. It doesn't add a comma on the last host (JSON standard)
+		End of the JSON array with "]"
+	*/
+
 	data := "[\n"
 	data += strings.Join(lines, ",\n")
 	data += "\n]"
 
+	/*
+		Create or replace file
+	*/
 	f, err := os.Create(filename)
 	if err != nil {
 		return err
 	}
 
+	/*
+		Write to file. Do we need to handle lock mechanism ?
+	*/
 	_, err = f.WriteString(data)
 	if err != nil {
 		return err
