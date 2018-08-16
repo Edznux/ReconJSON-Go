@@ -132,6 +132,13 @@ func TestHostDNS(t *testing.T) {
 	ip, _, _ := net.ParseCIDR("192.168.0.1")
 
 	dns := rjson.NewDNS()
+	dns.A = []string{"192.168.0.1", "192.168.0.2"}
+	dns.AAAA = []string{"fe80::1"}
+	dns.CNAME = []string{"ex.acme.com"}
+	dns.PTR = []string{"ex.acme.com"}
+	dns.MX = []string{"example-acme-com.mail.protection.outlook.com"}
+	dns.NS = []string{"nameserver.acme.com"}
+	dns.TXT = []string{"txtRecordString"}
 
 	basicHost := rjson.NewHost()
 

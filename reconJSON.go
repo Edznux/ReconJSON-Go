@@ -40,6 +40,7 @@ type DNS struct {
 	CNAME []string `json:"CNAME,omitempty"`
 	PTR   []string `json:"PTR,omitempty"`
 	MX    []string `json:"MX,omitempty"`
+	NS    []string `json:"NS,omitempty"`
 	TXT   []string `json:"TXT,omitempty"`
 }
 
