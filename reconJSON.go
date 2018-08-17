@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io/ioutil"
 	"net"
 	"os"
 	"strings"
@@ -92,6 +93,14 @@ func NewPort() *Port {
 	return &Port{Type: "port"}
 }
 
+func checkName(filename string) bool {
+
+	if strings.HasSuffix(filename, ".json") {
+		return true
+	}
+	return false
+}
+
 /*
 Write takes a slice of hosts and write it down into "filename"
 It (tries to) follow the Recon.JSON data structure found here : https://github.com/ReconJSON/ReconJSON
@@ -100,7 +109,7 @@ One host by line, (execept opening and closing lines)
 func Write(hosts []Host, filename string) error {
 	var lines []string
 
-	if !strings.HasSuffix(filename, ".json") {
+	if !checkName(filename) {
 		return errors.New("The provided filename doesn't end with .json")
 	}
 
@@ -142,4 +151,31 @@ func Write(hosts []Host, filename string) error {
 	f.Sync()
 
 	return nil
+}
+
+/*
+Read the filename provided and return a slice of Hosts.
+It handles files operation and errors checking
+*/
+func Read(filename string) ([]Host, error) {
+
+	var hosts []Host
+
+	if !checkName(filename) {
+		return nil, errors.New("The provided filename doesn't end with .json")
+	}
+
+	jsonFile, err := os.Open(filename)
+	if err != nil {
+		return nil, errors.New("Could not read file :" + err.Error())
+	}
+	defer jsonFile.Close()
+
+	data, _ := ioutil.ReadAll(jsonFile)
+	err = json.Unmarshal(data, &hosts)
+	if err != nil {
+		return nil, errors.New("Could not decode json :" + err.Error())
+	}
+
+	return hosts, nil
 }

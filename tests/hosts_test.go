@@ -203,3 +203,47 @@ func TestHostService(t *testing.T) {
 	RemoveFile(fileName)
 
 }
+
+func TestRead(t *testing.T) {
+	var hosts []rjson.Host
+	fileName := "testRead.json"
+	ip, _, _ := net.ParseCIDR("192.168.0.1")
+
+	basicHost := rjson.NewHost()
+	basicHost.Type = "Host"
+	basicHost.Fqdn = "example.acme.com"
+	basicHost.IP = ip
+	basicHost.Domain = "acme.com"
+	basicHost.Company = "Acme"
+
+	hosts = append(hosts, *basicHost)
+
+	err := rjson.Write(hosts, fileName)
+	if err != nil {
+		t.Errorf("Failed to write the ReconJSON file: %s", err.Error())
+	}
+
+	readHosts, err := rjson.Read(fileName)
+	if err != nil {
+		t.Errorf("Failed to read the ReconJSON file: %s", err.Error())
+	}
+
+	// Verify that each field is correctly read.
+	for _, host := range readHosts {
+		if host.Type != basicHost.Type {
+			t.Errorf("Read differ from write, expected Type to be : %s, got %s", basicHost.Type, host.Type)
+		}
+		if host.Fqdn != basicHost.Fqdn {
+			t.Errorf("Read differ from write, expected Fqdn to be : %s, got %s", basicHost.Fqdn, host.Fqdn)
+		}
+		if host.IP.String() != basicHost.IP.String() {
+			t.Errorf("Read differ from write, expected IP to be : %s, got %s", basicHost.IP, host.IP)
+		}
+		if host.Domain != basicHost.Domain {
+			t.Errorf("Read differ from write, expected Domain to be : %s, got %s", basicHost.Domain, host.Domain)
+		}
+		if host.Company != basicHost.Company {
+			t.Errorf("Read differ from write, expected Company to be : %s, got %s", basicHost.Company, host.Company)
+		}
+	}
+}
