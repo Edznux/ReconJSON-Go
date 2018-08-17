@@ -246,4 +246,6 @@ func TestRead(t *testing.T) {
 			t.Errorf("Read differ from write, expected Company to be : %s, got %s", basicHost.Company, host.Company)
 		}
 	}
+
+	RemoveFile(fileName)
 }
