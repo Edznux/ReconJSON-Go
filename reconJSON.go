@@ -46,18 +46,17 @@ type DNS struct {
 }
 
 type Service struct {
-	Type     string            `json:"type,omitempty"` // will be "Service"
-	Protocol string            `json:"protocol"`
-	Content  map[string]string `json:"content,omitempty"`
+	Type               string                 `json:"type,omitempty"` // will be "Service"
+	Protocol           string                 `json:"protocol"`
+	ServiceDescriptors map[string]interface{} `json:"serviceDescriptors,omitempty"`
 }
 
 type Port struct {
-	Type     string  `json:"type,omitempty"` // will be "Port"
-	Port     uint16  `json:"port"`
-	State    string  `json:"state"`
-	Protocol string  `json:"protocol,omitempty"`
-	Banner   string  `json:"banner,omitempty"`
-	Service  Service `json:"service,omitempty"`
+	Type    string  `json:"type,omitempty"` // will be "Port"
+	Port    uint16  `json:"port"`
+	State   string  `json:"state"`
+	Banner  string  `json:"banner,omitempty"`
+	Service Service `json:"service,omitempty"`
 }
 
 type Host struct {
@@ -71,6 +70,21 @@ type Host struct {
 		TCP []Port `json:"tcp,omitempty"`
 		UDP []Port `json:"udp,omitempty"`
 	} `json:"ports,omitempty"`
+}
+
+type Path struct {
+	Type        string `json:"type"`
+	Name        string `json:"name"`
+	Path        string `json:"path"`
+	Screenshot  string `json:"screenshot,omitempty"`
+	Code        string `json:"code,omitempty"`
+	ContentType string `json:"contentType,omitempty"`
+	Length      string `json:"length,omitempty"`
+	Verb        string `json:"verb,omitempty"`
+	Headers     string `json:"headers,omitempty"`
+	File        string `json:"file,omitempty"`
+	FileExt     string `json:"fileExt,omitempty"`
+	Hash        string `json:"hash,omitempty"`
 }
 
 // NewHost is the constructor of the Host stucture. It initialize it's type.
@@ -91,6 +105,11 @@ func NewService() *Service {
 // NewPort is the constructor of the Port stucture. It initialize it's type.
 func NewPort() *Port {
 	return &Port{Type: "port"}
+}
+
+// NewPath is the constructor of the Path stucture. It initialize it's type.
+func NewPath() *Path {
+	return &Path{Type: "path"}
 }
 
 func checkName(filename string) bool {
