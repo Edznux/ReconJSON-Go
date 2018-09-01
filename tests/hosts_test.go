@@ -7,6 +7,8 @@ import (
 	"os"
 	"testing"
 
+	"github.com/edznux/ReconJSON-Go/ServiceDescriptors"
+
 	rjson "github.com/edznux/ReconJSON-Go"
 )
 
@@ -102,8 +104,6 @@ func TestHostPort(t *testing.T) {
 	port := rjson.NewPort()
 	port.State = rjson.StateOpen.String()
 	port.Port = 22
-	port.Protocol = "ssh"
-	port.Banner = "SSH-2.0-OpenSSH_7.2p2 Ubuntu-4ubuntu2.4"
 
 	TCPPorts := []rjson.Port{}
 	TCPPorts = append(TCPPorts, *port)
@@ -166,20 +166,28 @@ func TestHostService(t *testing.T) {
 		t.Errorf("Could parse CIDR IP")
 	}
 
+	path := rjson.NewHttpUrl()
+	path.Path = "/test"
+	path.Screenshot = "/root/screenshots/screenshot.jpg"
+	path.Code = 200
+	path.ContentType = "text/html"
+	path.Length = 1024
+
+	var paths []servicedescriptors.HttpUrl
+	paths = make([]servicedescriptors.HttpUrl, 0)
+	paths = append(paths, *path)
+
+	var sd map[string]interface{}
+	sd = make(map[string]interface{})
+	sd["Paths"] = paths
+
 	service := rjson.NewService()
 	service.Protocol = "http"
-	service.Content = map[string]string{
-		"path":         "/test",
-		"screenshot":   "/root/screenshots/screenshot.jpg",
-		"code":         "200",
-		"content-type": "text/html",
-		"length":       "1024",
-	}
+	service.Banner = "Apache 1.0"
 
 	port := rjson.NewPort()
 	port.State = rjson.StateOpen.String()
 	port.Port = 80
-	port.Protocol = "http"
 	port.Service = *service
 
 	TCPPorts := []rjson.Port{}
