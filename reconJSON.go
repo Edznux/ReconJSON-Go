@@ -8,6 +8,8 @@ import (
 	"net"
 	"os"
 	"strings"
+
+	servicedescriptors "github.com/edznux/ReconJSON-Go/ServiceDescriptors"
 )
 
 type PortState uint8
@@ -48,16 +50,15 @@ type DNS struct {
 type Service struct {
 	Type     string            `json:"type,omitempty"` // will be "Service"
 	Protocol string            `json:"protocol"`
+	Banner   string            `json:"banner,omitempty"`
 	Content  map[string]string `json:"content,omitempty"`
 }
 
 type Port struct {
-	Type     string  `json:"type,omitempty"` // will be "Port"
-	Port     uint16  `json:"port"`
-	State    string  `json:"state"`
-	Protocol string  `json:"protocol,omitempty"`
-	Banner   string  `json:"banner,omitempty"`
-	Service  Service `json:"service,omitempty"`
+	Type    string  `json:"type,omitempty"` // will be "Port"
+	Port    uint16  `json:"port"`
+	State   string  `json:"state"`
+	Service Service `json:"service,omitempty"`
 }
 
 type Host struct {
@@ -91,6 +92,11 @@ func NewService() *Service {
 // NewPort is the constructor of the Port stucture. It initialize it's type.
 func NewPort() *Port {
 	return &Port{Type: "port"}
+}
+
+// NewHttpUrl is the constructor for the "HttpUrl" service descriptor
+func NewHttpUrl() *servicedescriptors.HttpUrl {
+	return &servicedescriptors.HttpUrl{Type: "httpUrl"}
 }
 
 func checkName(filename string) bool {
