@@ -96,7 +96,12 @@ func NewPort() *Port {
 
 // NewHttpUrl is the constructor for the "HttpUrl" service descriptor
 func NewHttpUrl() *servicedescriptors.HttpUrl {
-	return &servicedescriptors.HttpUrl{Type: "httpUrl"}
+	return &servicedescriptors.HttpUrl{Type: "ServiceDescriptor", Name: "httpUrl"}
+}
+
+// NewHttpsCert is the constructor for the "HttpsCert" service descriptor
+func NewHttpsCert() *servicedescriptors.HttpsCert {
+	return &servicedescriptors.HttpsCert{Type: "ServiceDescriptor", Name: "httpsCert"}
 }
 
 func checkName(filename string) bool {

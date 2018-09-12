@@ -1,8 +1,8 @@
 package servicedescriptors
 
 type HttpUrl struct {
-	Type              string            `json:"type"`                        // "httpUrl"
-	Name              string            `json:"name"`                        // MUST be a descriptive name of what data this ServiceDescriptor is describing
+	Type              string            `json:"type"`                        // "ServiceDescriptor"
+	Name              string            `json:"name"`                        // "httpUrl" MUST be a descriptive name of what data this ServiceDescriptor is describing
 	Path              string            `json:"path"`                        // MUST be the path requested where path is defined by RFC 3986 section 3.3
 	Verb              string            `json:"verb"`                        // MUST be the the HTTP Verb used in the request to this path.
 	ParamsContentType string            `json:"paramsContentType,omitempty"` // MUST be the format in which the params field is stored. The value of this field MUST be one of the following: application/x-www-form-urlencoded, multipart/form-data, application/json, or application/xml.
