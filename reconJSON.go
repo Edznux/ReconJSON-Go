@@ -104,6 +104,11 @@ func NewHttpsCert() *servicedescriptors.HttpsCert {
 	return &servicedescriptors.HttpsCert{Type: "ServiceDescriptor", Name: "httpsCert"}
 }
 
+// NewHttpCsp is the constructor for the "HttpsCert" service descriptor
+func NewHttpCsp() *servicedescriptors.HttpCSP {
+	return &servicedescriptors.HttpCSP{Type: "ServiceDescriptor", Name: "httpCsp"}
+}
+
 func checkName(filename string) bool {
 
 	if strings.HasSuffix(filename, ".json") {
